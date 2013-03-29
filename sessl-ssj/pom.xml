@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.sessl.ssj</groupId>
+	<artifactId>sessl-ssj</artifactId>
+	<packaging>jar</packaging>
+	<name>SSJ Support for SESSL</name>
+
+ <parent>
+    <groupId>org.sessl</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>0.8-SNAPSHOT</version>
+ </parent>
+ 
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+    		<groupId>umontreal</groupId>
+    		<artifactId>ssj</artifactId>
+    		<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sessl</groupId>
+			<artifactId>sessl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sessl</groupId>
+			<artifactId>sessl-james</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sessl</groupId>
+			<artifactId>sessl-james</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

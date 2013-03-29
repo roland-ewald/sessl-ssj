@@ -1,0 +1,7 @@
+glob:target
+glob:*.class
+glob:.settings
+glob:.classpath
+glob:.checkstyle
+glob:.cache
+glob:.regdata
