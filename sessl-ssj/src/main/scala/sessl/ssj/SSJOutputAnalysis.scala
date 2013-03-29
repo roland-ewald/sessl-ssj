@@ -14,16 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package sessl
+package sessl.ssj
 
-import umontreal.iro.lecuyer.functionfit._
+import sessl.AbstractExperiment
+import sessl.ExperimentConfiguration
 
 /**
- * Provides some general support for using SSJ with SESSL.
+ * Provides support for output analysis with SSJ.
  * 
  * @author Roland Ewald
  */
-package object ssj {
+trait SSJOutputAnalysis extends ExperimentConfiguration {
+  this: AbstractExperiment =>
+    
   
- 
+
 }
