@@ -43,7 +43,7 @@
 			<version>1.8</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Dependencies for SSJ? -->
+		<!-- Dependencies for SSJ: -->
 		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>

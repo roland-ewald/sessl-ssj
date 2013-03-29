@@ -55,8 +55,8 @@ trait Report extends AbstractReport {
     import sessl.util.ScalaToJava._
     view match {
       case v: ScatterPlotView => {
-        val twoDArray: Array[Array[Double]] = (v.xData zip v.yData).toArray.map(x => Array(x._1, x._2))
-        new ScatterChart(v.title, v.xLabel, v.yLabel, twoDArray, 1, 1)
+        new ScatterChart(v.title, v.xLabel, v.yLabel,
+          Array(v.xData.toArray, v.yData.toArray)).toLatexFile(name + ".tex", 12, 8)
       }
       case v: HistogramView => null
       case v: BoxPlotView => null

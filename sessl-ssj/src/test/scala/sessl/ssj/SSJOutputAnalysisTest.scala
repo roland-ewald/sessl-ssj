@@ -22,6 +22,10 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.Assert._
 import umontreal.iro.lecuyer.functions.MathFunction
 
+import sessl._
+import sessl.james._
+import sessl.ssj._
+
 /**
  * Tests for {@link SSJOutputAnalysis}.
  *
@@ -32,28 +36,13 @@ class SSJOutputAnalysisTest extends FunSpec {
 
   describe("SSJ-based output analysis") {
 
-    import sessl._
-    import sessl.james._
-    import sessl.ssj._
-
-    val observationRange = range(.0, .1, .9)
-
-    /** The test experiment to be used to generate some data. */
-    class TestExperiment extends Experiment with Observation with SSJOutputAnalysis {
-      model = "java://examples.sr.LinearChainSystem"
-      stopTime = 1.0
-      scan("numOfSpecies" <~ (10, 15))
-      observe("x" to "S1", "y" ~ "S5")
-      observeAt(observationRange)
-    }
-
     def applyFunc(f: MathFunction, times: List[Double]): List[Double] = times.map(f.evaluate(_))
 
     it("supports the least-squares polynom fitting.") {
       var linearFit: Option[Array[Double]] = None
       var quadraticFit: Option[Array[Double]] = None
       sessl.execute {
-        new TestExperiment {
+        new SSJTestExperiment {
           withRunResult {
             result =>
               {
@@ -75,7 +64,7 @@ class SSJOutputAnalysisTest extends FunSpec {
       var bSpline: Option[MathFunction] = None
       var approxBSpline: Option[MathFunction] = None
       sessl.execute {
-        new TestExperiment {
+        new SSJTestExperiment {
           withRunResult {
             result =>
               {
@@ -94,7 +83,7 @@ class SSJOutputAnalysisTest extends FunSpec {
     it("supports fitting cubic splines.") {
       var cubicSpline: Option[MathFunction] = None
       sessl.execute {
-        new TestExperiment {
+        new SSJTestExperiment {
           withRunResult {
             result =>
               {
@@ -109,4 +98,17 @@ class SSJOutputAnalysisTest extends FunSpec {
       assertTrue(cubicSpline.isDefined)
     }
   }
+}
+
+object SSJOutputAnalysisTest {
+  val observationRange = range(.0, .1, .9)
+}
+
+/** The test experiment to be used to generate some data. */
+class SSJTestExperiment extends Experiment with Observation with SSJOutputAnalysis {
+  model = "java://examples.sr.LinearChainSystem"
+  stopTime = 1.0
+  scan("numOfSpecies" <~ (10, 15))
+  observe("x" to "S1", "y" ~ "S5")
+  observeAt(SSJOutputAnalysisTest.observationRange)
 }
