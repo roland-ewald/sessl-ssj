@@ -19,8 +19,8 @@ package sessl.ssj
 import org.junit.runner.RunWith
 import org.scalatest.FunSpec
 import org.scalatest.junit.JUnitRunner
-
 import org.junit.Assert._
+import umontreal.iro.lecuyer.functions.MathFunction
 
 /**
  * Tests for {@link SSJOutputAnalysis}.
@@ -30,38 +30,83 @@ import org.junit.Assert._
 @RunWith(classOf[JUnitRunner])
 class SSJOutputAnalysisTest extends FunSpec {
 
-  describe("SSJ integration") {
+  describe("SSJ-based output analysis") {
 
-    it("supports the least-squares method.") {
+    import sessl._
+    import sessl.james._
+    import sessl.ssj._
 
-      var linearFit: Option[List[Double]] = None
-      var quadraticFit: Option[List[Double]] = None
+    val observationRange = range(.0, .1, .9)
 
-      import sessl._
-      import sessl.james._
-      import sessl.ssj._
+    /** The test experiment to be used to generate some data. */
+    class TestExperiment extends Experiment with Observation with SSJOutputAnalysis {
+      model = "java://examples.sr.LinearChainSystem"
+      stopTime = 1.0
+      scan("numOfSpecies" <~ (10, 15))
+      observe("x" to "S1", "y" ~ "S5")
+      observeAt(observationRange)
+    }
 
+    def applyFunc(f: MathFunction, times: List[Double]): List[Double] = times.map(f.evaluate(_))
+
+    it("supports the least-squares polynom fitting.") {
+      var linearFit: Option[Array[Double]] = None
+      var quadraticFit: Option[Array[Double]] = None
       sessl.execute {
-        new Experiment with Observation with SSJOutputAnalysis {
-          model = "java://examples.sr.LinearChainSystem"
-          stopTime = 1.0
-          scan("numOfSpecies" <~ (10, 15))
-          observe("x" to "S1", "y" ~ "S5")
-          observeAt(range(.0, .1, .9))
+        new TestExperiment {
           withRunResult {
             result =>
               {
-                logger.info("Quadratic least-squares coefficients for trajectory:" + leastSquares(result.trajectory("y"), 2))
-                linearFit = Some(leastSquares(result.trajectory("y"), 1))
-                quadraticFit = Some(leastSquares(result.trajectory("y"), 2))
+                val tr = result.trajectory("y")
+                linearFit = Some(fitPolynom(result.trajectory("y"), 1).getCoefficients)
+                quadraticFit = Some(fitPolynom(result.trajectory("y"), 2).getCoefficients)
+                logger.info("Trajectory to be fitted:" + tr)
+                logger.info("Quadratic polynom fitted with least-squares evaluated for trajectory:" + applyFunc(fitPolynom(tr, 2), result.times("y")))
               }
           }
         }
       }
-
       assertTrue("Both fits should be defined.", linearFit.isDefined && quadraticFit.isDefined)
       assertEquals("Two coefficients define f(x) = a*x+b", 2, linearFit.get.size)
       assertEquals("Three coefficients define f(x) = a*x^2+b*x+c", 3, quadraticFit.get.size)
+    }
+
+    it("supports fitting B-splines.") {
+      var bSpline: Option[MathFunction] = None
+      var approxBSpline: Option[MathFunction] = None
+      sessl.execute {
+        new TestExperiment {
+          withRunResult {
+            result =>
+              {
+                val tr = result.trajectory("y")
+                bSpline = Some(fitBSpline(tr, 2))
+                approxBSpline = Some(fitApproxBSpline(tr, 2, 3))
+                logger.info("Trajectory to be fitted:" + tr)
+                logger.info("BSpline approximation for this trajectory:" + applyFunc(approxBSpline.get, result.times("y")))
+              }
+          }
+        }
+      }
+      List(bSpline, approxBSpline).map(x => assertTrue(x.isDefined))
+    }
+
+    it("supports fitting cubic splines.") {
+      var cubicSpline: Option[MathFunction] = None
+      sessl.execute {
+        new TestExperiment {
+          withRunResult {
+            result =>
+              {
+                val tr = result.trajectory("y")
+                cubicSpline = Some(fitCubicSpline(tr, .5))
+                logger.info("Trajectory to be fitted:" + tr)
+                logger.info("Cubic spline approximation for this trajectory:" + applyFunc(cubicSpline.get, result.times("y")))
+              }
+          }
+        }
+      }
+      assertTrue(cubicSpline.isDefined)
     }
   }
 }
