@@ -16,17 +16,25 @@
  */
 package sessl.ssj
 
+import sessl._
 import sessl.AbstractExperiment
 import sessl.ExperimentConfiguration
+import sessl.util.ScalaToJava._
+import umontreal.iro.lecuyer.functionfit.LeastSquares
 
 /**
  * Provides support for output analysis with SSJ.
- * 
+ *
  * @author Roland Ewald
  */
 trait SSJOutputAnalysis extends ExperimentConfiguration {
   this: AbstractExperiment =>
-    
-  
+
+  def leastSquares(data: Trajectory, degree: Int): List[Double] = {
+    require(data.head._2.isInstanceOf[Number], "Trajectory values need to be real-valued.")
+    val timeArray = data.map(_._1).toArray
+    val dataArray = data.map(_._2.asInstanceOf[Number].doubleValue).toArray
+    LeastSquares.getCoefficients(timeArray, dataArray, degree).toList
+  }
 
 }

@@ -6,21 +6,21 @@
 	<packaging>jar</packaging>
 	<name>SSJ Support for SESSL</name>
 
- <parent>
-    <groupId>org.sessl</groupId>
-    <artifactId>parent-pom</artifactId>
-    <version>0.8-SNAPSHOT</version>
- </parent>
- 
+	<parent>
+		<groupId>org.sessl</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>0.8-SNAPSHOT</version>
+	</parent>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
-    		<groupId>umontreal</groupId>
-    		<artifactId>ssj</artifactId>
-    		<version>2.4</version>
+			<groupId>umontreal</groupId>
+			<artifactId>ssj</artifactId>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.sessl</groupId>
@@ -36,6 +36,17 @@
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scalatest</groupId>
+			<artifactId>scalatest_2.9.2</artifactId>
+			<version>1.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>colt</groupId>
+			<artifactId>colt</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 </project>
