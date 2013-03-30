@@ -34,12 +34,14 @@ import umontreal.iro.lecuyer.charts.XYChart
 import umontreal.iro.lecuyer.charts.XYLineChart
 
 /**
+ * Support for SSJ-based charts generated as reports.
+ *
  * @author Roland Ewald
  */
 trait Report extends AbstractReport {
   this: AbstractExperiment =>
 
-  def generateReport(results: ExperimentResults): Unit = {
+  override def generateReport(results: ExperimentResults): Unit = {
     topmostElements.foreach(e => createView(reportName, e))
   }
 
@@ -54,22 +56,24 @@ trait Report extends AbstractReport {
     case _ => throw new IllegalArgumentException("Element " + node + " not supported.")
   }
 
+  /** Creates the charts, stores them to .tex files. */
   private[this] def createChart(name: String, view: DataView): Unit = {
 
+    import sessl.util.ScalaToJava._
+
+    /** Storage function. */
     def store(c: XYChart) = c.toLatexFile(name + ".tex", 12, 8)
 
-    import sessl.util.ScalaToJava._
     view match {
-      case v: ScatterPlotView => {
-        store(new ScatterChart(v.title, v.xLabel, v.yLabel,
-          Array(v.xData.toArray, v.yData.toArray)))
-      }
-      case v: HistogramView => {
-        store(new HistogramChart(v.title, v.xLabel, v.yLabel, v.data.toArray))
-      }
-      case v: LinePlotView => {
-        store(new XYLineChart(v.title, v.xLabel, v.yLabel, v.data.map(_._2.toArray).toArray))
-      }
+      case v: ScatterPlotView =>
+        store(
+          new ScatterChart(v.title, v.xLabel, v.yLabel, Array(v.xData.toArray, v.yData.toArray)))
+      case v: HistogramView =>
+        store(
+          new HistogramChart(v.title, v.xLabel, v.yLabel, v.data.toArray))
+      case v: LinePlotView =>
+        store(
+          new XYLineChart(v.title, v.xLabel, v.yLabel, v.data.map(_._2.toArray).toArray))
       case v: BoxPlotView => null
       case _ => throw new IllegalArgumentException("Data view " + view + " not yet supported.")
     }
