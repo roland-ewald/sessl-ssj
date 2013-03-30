@@ -40,8 +40,14 @@ class ReportTest extends FunSpec {
           withRunResult {
             results =>
               {
-                reportSection("Run" + results.id) {
-                  scatterPlot(results.values("x"), results.values("y"))(title = "The trajectories of x and y!")
+                reportSection("Scatterplot") {
+                  scatterPlot(results.values("x"), results.values("y"))(title = "A scatterplot")
+                }
+                reportSection("Histogram") {
+                  histogram(results.values("x"))(title = "A histogram", xLabel = "the x label", yLabel = "y-label")
+                }
+                reportSection("Lineplot") {
+                  linePlot(results ~ ("x"), results ~ ("y"))(title = "A lineplot for x and y trajectories.")
                 }
               }
           }

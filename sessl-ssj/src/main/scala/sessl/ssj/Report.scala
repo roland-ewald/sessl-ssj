@@ -28,7 +28,10 @@ import sessl.LinePlotView
 import sessl.ReportNode
 import sessl.ReportSectionNode
 import sessl.ScatterPlotView
+import umontreal.iro.lecuyer.charts.HistogramChart
 import umontreal.iro.lecuyer.charts.ScatterChart
+import umontreal.iro.lecuyer.charts.XYChart
+import umontreal.iro.lecuyer.charts.XYLineChart
 
 /**
  * @author Roland Ewald
@@ -52,15 +55,22 @@ trait Report extends AbstractReport {
   }
 
   private[this] def createChart(name: String, view: DataView): Unit = {
+
+    def store(c: XYChart) = c.toLatexFile(name + ".tex", 12, 8)
+
     import sessl.util.ScalaToJava._
     view match {
       case v: ScatterPlotView => {
-        new ScatterChart(v.title, v.xLabel, v.yLabel,
-          Array(v.xData.toArray, v.yData.toArray)).toLatexFile(name + ".tex", 12, 8)
+        store(new ScatterChart(v.title, v.xLabel, v.yLabel,
+          Array(v.xData.toArray, v.yData.toArray)))
       }
-      case v: HistogramView => null
+      case v: HistogramView => {
+        store(new HistogramChart(v.title, v.xLabel, v.yLabel, v.data.toArray))
+      }
+      case v: LinePlotView => {
+        store(new XYLineChart(v.title, v.xLabel, v.yLabel, v.data.map(_._2.toArray).toArray))
+      }
       case v: BoxPlotView => null
-      case v: LinePlotView => null
       case _ => throw new IllegalArgumentException("Data view " + view + " not yet supported.")
     }
   }
