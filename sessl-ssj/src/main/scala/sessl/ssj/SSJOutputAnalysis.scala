@@ -16,15 +16,10 @@
  */
 package sessl.ssj
 
-import sessl._
 import sessl.AbstractExperiment
 import sessl.ExperimentConfiguration
-import sessl.util.ScalaToJava._
-import umontreal.iro.lecuyer.functionfit.LeastSquares
-import umontreal.iro.lecuyer.functionfit.BSpline
+import sessl.Trajectory
 import umontreal.iro.lecuyer.functions.MathFunction
-import umontreal.iro.lecuyer.functions.Polynomial
-import umontreal.iro.lecuyer.functionfit.SmoothingCubicSpline
 
 /**
  * Provides support for output analysis with SSJ.
@@ -36,34 +31,7 @@ import umontreal.iro.lecuyer.functionfit.SmoothingCubicSpline
 trait SSJOutputAnalysis extends ExperimentConfiguration {
   this: AbstractExperiment =>
 
-  def fitPolynom(data: Trajectory, degree: Int): Polynomial = {
-    checkTrajectoryValidity(data)
-    val converted = convertValues(data)
-    new LeastSquares(converted._1, converted._2, degree)
-  }
-
-  def fitBSpline(data: Trajectory, degree: Int): BSpline = {
-    checkTrajectoryValidity(data)
-    val converted = convertValues(data)
-    BSpline.createInterpBSpline(converted._1, converted._2, degree)
-  }
-
-  def fitApproxBSpline(data: Trajectory, degree: Int, h: Int): BSpline = {
-    checkTrajectoryValidity(data)
-    val converted = convertValues(data)
-    BSpline.createApproxBSpline(converted._1, converted._2, degree, h)
-  }
-
-  def fitCubicSpline(data: Trajectory, rho: Double): SmoothingCubicSpline = {
-    require(rho >= 0 && rho <= 1, "Parameter rho needs to be in [0,1].")
-    checkTrajectoryValidity(data)
-    val converted = convertValues(data)
-    new SmoothingCubicSpline(converted._1, converted._2, rho)
-  }
-
-  private[this] def convertValues(t: Trajectory): (Array[Double], Array[Double]) =
-    (t.map(_._1).toArray, t.map(_._2.asInstanceOf[Number].doubleValue).toArray)
-
-  private[this] def checkTrajectoryValidity(t: Trajectory) = require(t.head._2.isInstanceOf[Number], "Trajectory values need to be real-valued.")
+  /** Fits a function to the given data. */
+  def fit[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): M = af.fitToData(data)   
 
 }

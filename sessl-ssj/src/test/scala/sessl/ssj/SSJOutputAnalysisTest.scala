@@ -47,10 +47,10 @@ class SSJOutputAnalysisTest extends FunSpec {
             result =>
               {
                 val tr = result.trajectory("y")
-                linearFit = Some(fitPolynom(result.trajectory("y"), 1).getCoefficients)
-                quadraticFit = Some(fitPolynom(result.trajectory("y"), 2).getCoefficients)
+                linearFit = Some(fit(result.trajectory("y"), Polynomial(1)).getCoefficients)
+                quadraticFit = Some(fit(result.trajectory("y"), Polynomial(2)).getCoefficients)
                 logger.info("Trajectory to be fitted:" + tr)
-                logger.info("Quadratic polynom fitted with least-squares evaluated for trajectory:" + applyFunc(fitPolynom(tr, 2), result.times("y")))
+                logger.info("Quadratic polynom fitted with least-squares evaluated for trajectory:" + applyFunc(fit(tr, Polynomial(2)), result.times("y")))
               }
           }
         }
@@ -69,8 +69,8 @@ class SSJOutputAnalysisTest extends FunSpec {
             result =>
               {
                 val tr = result.trajectory("y")
-                bSpline = Some(fitBSpline(tr, 2))
-                approxBSpline = Some(fitApproxBSpline(tr, 2, 3))
+                bSpline = Some(fit(tr, BSpline(2)))
+                approxBSpline = Some(fit(tr, ApproximatedBSpline(2, 3)))
                 logger.info("Trajectory to be fitted:" + tr)
                 logger.info("BSpline approximation for this trajectory:" + applyFunc(approxBSpline.get, result.times("y")))
               }
@@ -88,7 +88,7 @@ class SSJOutputAnalysisTest extends FunSpec {
             result =>
               {
                 val tr = result.trajectory("y")
-                cubicSpline = Some(fitCubicSpline(tr, .5))
+                cubicSpline = Some(fit(tr, SmoothingCubicSpline(.5)))
                 logger.info("Trajectory to be fitted:" + tr)
                 logger.info("Cubic spline approximation for this trajectory:" + applyFunc(cubicSpline.get, result.times("y")))
               }
