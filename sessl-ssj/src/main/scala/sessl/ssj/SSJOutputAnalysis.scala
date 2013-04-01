@@ -31,7 +31,20 @@ import umontreal.iro.lecuyer.functions.MathFunction
 trait SSJOutputAnalysis extends ExperimentConfiguration {
   this: AbstractExperiment =>
 
+  def fit[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): M = SSJOutputAnalysis.fit(data, af)
+
+}
+
+object SSJOutputAnalysis {
+
   /** Fits a function to the given data. */
-  def fit[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): M = af.fitToData(data)   
+  def fit[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): M = af.fitToData(data)
+
+  /** Fits a function to the given data, evaluates it for the given trajectories' time points. */
+  def fitAndEval[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): Trajectory = {
+    val fitted = fit(data, af)
+    val times = data.map(_._1)
+    times.map(t => (t, fitted.evaluate(t)))
+  }
 
 }

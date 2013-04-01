@@ -42,9 +42,7 @@ class ReportTest extends FunSpec {
     import sessl.ssj._
 
     it("supports different plots.") {
-
       plotNames.foreach(fileFor(_).delete)
-
       sessl.execute {
         new SSJTestExperiment with Report {
           reportName = testReportName
@@ -64,10 +62,21 @@ class ReportTest extends FunSpec {
           }
         }
       }
+      plotNames.foreach(n => assertTrue(fileFor(n).exists))
+    }
 
-      plotNames.foreach(n => {
-        assertTrue(fileFor(n).exists)
-      })
+    it("provides custom elements for SSJ's output analysis capabilities.") {
+      sessl.execute {
+        new SSJTestExperiment with Report {
+          reportName = testReportName
+          withRunResult {
+            results => {
+              reportFit(results ~ ("x"), Polynomial(1))
+              reportFit(results ~ ("x"), Polynomial(2))
+            }
+          }
+        }
+      }
 
     }
   }

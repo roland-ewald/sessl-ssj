@@ -32,6 +32,8 @@ import umontreal.iro.lecuyer.charts.ScatterChart
 import umontreal.iro.lecuyer.charts.XYChart
 import umontreal.iro.lecuyer.charts.XYLineChart
 import umontreal.iro.lecuyer.charts.BoxChart
+import umontreal.iro.lecuyer.functions.MathFunction
+import sessl.Trajectory
 
 /**
  * Support for SSJ-based charts generated as reports.
@@ -40,6 +42,14 @@ import umontreal.iro.lecuyer.charts.BoxChart
  */
 trait Report extends AbstractReport {
   this: AbstractExperiment =>
+
+  def reportFit[M <: MathFunction](data: (String, Trajectory), af: ApproximationForm[M], sectionName: String = "") = {
+    val secName = if (sectionName.isEmpty) "Fit for '" + data._1 + "' using " + af else sectionName
+    val fitData = (af.toString, SSJOutputAnalysis.fitAndEval(data._2, af))
+    reportSection(secName) {
+      linePlot(data, fitData)(title = secName)
+    }
+  }
 
   override def generateReport(results: ExperimentResults): Unit = {
     topmostElements.foreach(e => createView(reportName, e))

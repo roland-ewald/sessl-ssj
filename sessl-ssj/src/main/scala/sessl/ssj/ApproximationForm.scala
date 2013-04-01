@@ -24,7 +24,7 @@ import umontreal.iro.lecuyer.functions.MathFunction
  * Constructs to represent approximation forms.
  * @author Roland Ewald
  */
-trait ApproximationForm[M <: MathFunction] {
+trait ApproximationForm[+M <: MathFunction] {
 
   /** Needs to be implemented by the approximation form. */
   def approximate(times: Array[Double], values: Array[Double]): M
