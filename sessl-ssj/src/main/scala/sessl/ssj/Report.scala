@@ -17,7 +17,6 @@
 package sessl.ssj
 
 import com.weiglewilczek.slf4s.Logger
-
 import sessl.AbstractExperiment
 import sessl.AbstractReport
 import sessl.BoxPlotView
@@ -32,6 +31,7 @@ import umontreal.iro.lecuyer.charts.HistogramChart
 import umontreal.iro.lecuyer.charts.ScatterChart
 import umontreal.iro.lecuyer.charts.XYChart
 import umontreal.iro.lecuyer.charts.XYLineChart
+import umontreal.iro.lecuyer.charts.BoxChart
 
 /**
  * Support for SSJ-based charts generated as reports.
@@ -74,7 +74,6 @@ trait Report extends AbstractReport {
       case v: LinePlotView =>
         store(
           new XYLineChart(v.title, v.xLabel, v.yLabel, v.data.map(_._2.toArray).toArray))
-      case v: BoxPlotView => null
       case _ => throw new IllegalArgumentException("Data view " + view + " not yet supported.")
     }
   }

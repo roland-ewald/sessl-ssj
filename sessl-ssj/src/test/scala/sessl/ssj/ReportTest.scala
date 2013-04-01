@@ -19,6 +19,8 @@ package sessl.ssj
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.junit.Assert._
+import java.io.File
 
 /**
  * Tests for {@link SSJOutputAnalysis}.
@@ -28,31 +30,45 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ReportTest extends FunSpec {
 
+  val testReportName = "SSJ-Report"
+
+  val plotNames = Array("Scatterplot", "Histogram", "Lineplot")
+
+  def fileFor(n: String) = new File("./" + testReportName + "-" + n + ".tex")
+
   describe("Reporting with SSJ") {
 
     import sessl._
     import sessl.ssj._
 
-    it("supports scatter plots.") {
+    it("supports different plots.") {
+
+      plotNames.foreach(fileFor(_).delete)
+
       sessl.execute {
         new SSJTestExperiment with Report {
-          reportName = "SSJ-Report"
+          reportName = testReportName
           withRunResult {
             results =>
               {
-                reportSection("Scatterplot") {
+                reportSection(plotNames(0)) {
                   scatterPlot(results.values("x"), results.values("y"))(title = "A scatterplot")
                 }
-                reportSection("Histogram") {
+                reportSection(plotNames(1)) {
                   histogram(results.values("x"))(title = "A histogram", xLabel = "the x label", yLabel = "y-label")
                 }
-                reportSection("Lineplot") {
+                reportSection(plotNames(2)) {
                   linePlot(results ~ ("x"), results ~ ("y"))(title = "A lineplot for x and y trajectories.")
                 }
               }
           }
         }
       }
+
+      plotNames.foreach(n => {
+        assertTrue(fileFor(n).exists)
+      })
+
     }
   }
 
