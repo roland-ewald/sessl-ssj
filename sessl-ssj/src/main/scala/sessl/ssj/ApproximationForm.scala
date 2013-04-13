@@ -19,6 +19,7 @@ package sessl.ssj
 import sessl.Trajectory
 import umontreal.iro.lecuyer.functionfit.LeastSquares
 import umontreal.iro.lecuyer.functions.MathFunction
+import sessl.Misc
 
 /**
  * Constructs to represent approximation forms.
@@ -31,7 +32,7 @@ trait ApproximationForm[+M <: MathFunction] {
 
   /** Converts and checks SESSL data for usage, the fits approximation form. */
   def fitToData(data: Trajectory): M = {
-    checkTrajectoryValidity(data)
+    Misc.requireNumericTrajectories(data)
     val converted = convertValues(data)
     approximate(converted._1, converted._2)
   }
@@ -39,10 +40,6 @@ trait ApproximationForm[+M <: MathFunction] {
   /** Convert trajectory to tuple of double[] (times + values).*/
   private[this] def convertValues(t: Trajectory): (Array[Double], Array[Double]) =
     (t.map(_._1).toArray, t.map(_._2.asInstanceOf[Number].doubleValue).toArray)
-
-  /** Checks whether trajectory contains numbers (only first element is checked).*/
-  private[this] def checkTrajectoryValidity(t: Trajectory) = require(t.head._2.isInstanceOf[Number], "Trajectory values need to be real-valued.")
-
 }
 
 case class Polynomial(degree: Int) extends ApproximationForm[umontreal.iro.lecuyer.functions.Polynomial] {

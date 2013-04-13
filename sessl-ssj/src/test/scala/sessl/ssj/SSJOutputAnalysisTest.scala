@@ -16,15 +16,15 @@
  */
 package sessl.ssj
 
+import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.scalatest.FunSpec
 import org.scalatest.junit.JUnitRunner
-import org.junit.Assert._
-import umontreal.iro.lecuyer.functions.MathFunction
-
 import sessl._
 import sessl.james._
 import sessl.ssj._
+import umontreal.iro.lecuyer.functions.MathFunction
+import sessl.util.Logging
 
 /**
  * Tests for {@link SSJOutputAnalysis}.
@@ -32,7 +32,7 @@ import sessl.ssj._
  * @author Roland Ewald
  */
 @RunWith(classOf[JUnitRunner])
-class SSJOutputAnalysisTest extends FunSpec {
+class SSJOutputAnalysisTest extends FunSpec with Logging {
 
   describe("SSJ-based output analysis") {
 
@@ -96,6 +96,41 @@ class SSJOutputAnalysisTest extends FunSpec {
         }
       }
       assertTrue(cubicSpline.isDefined)
+    }
+
+    it("can be used together with simulation-based optimization") {
+
+      import sessl.optimization._
+      import sessl.opt4j._
+      import sessl.Misc._
+
+      var optimizationResult = ""
+
+      optimize(MultiObjective(("exec-time", min), ("error", min))) { (params, objective) =>
+        sessl.execute {
+          new Experiment with Observation with SSJOutputAnalysis with PerformanceObservation {
+            model = "java://examples.sr.LinearChainSystem"
+            set("propensity" <~ params("p"), "numOfInitialParticles" <~ params("n"))
+            stopTime = 1.0
+            observe("S1")
+            observeAt(range(.0, .1, .9))
+            simulator = TauLeaping(epsilon = params.get("eps"))
+            withRunPerformance { perf => objective("exec-time") <~ perf.runtime }
+            withRunResult { r => objective("error") <~ rmse(r.trajectory("S1"), fitAndEval(r.trajectory("S1"), Polynomial(params.get("fit")))) }
+          }
+        }
+      } using {
+        new Opt4JSetup {
+          param("p", 1, 1, 15)
+          param("n", 10000, 100, 15000)
+          param("eps", 0.01, 0.005, 0.09)
+          param("fit", 1, 1, 4)
+          optimizer = EvolutionaryAlgorithm(generations = 20, alpha = 30)
+          withOptimizationResults(r => optimizationResult = r.mkString("\n"))
+        }
+      }
+      logger.info("Optimization result:" + optimizationResult)
+      assertTrue("Optimization results should be non-empty.", optimizationResult.length > 0)
     }
   }
 }

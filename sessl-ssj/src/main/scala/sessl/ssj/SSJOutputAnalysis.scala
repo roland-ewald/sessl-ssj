@@ -33,6 +33,8 @@ trait SSJOutputAnalysis extends ExperimentConfiguration {
 
   def fit[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): M = SSJOutputAnalysis.fit(data, af)
 
+  def fitAndEval[M <: MathFunction](data: Trajectory, af: ApproximationForm[M]): Trajectory = SSJOutputAnalysis.fitAndEval(data, af)
+
 }
 
 object SSJOutputAnalysis {
