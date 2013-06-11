@@ -104,11 +104,10 @@ class SSJOutputAnalysisTest extends FunSpec with Logging {
 
       import sessl._
       import sessl.optimization._
-      
+
       import sessl.ssj._
       import sessl.opt4j._
       import sessl.james._
-      
 
       optimize(MultiObjective(("exec-time", min), ("error", min))) { (params, objective) =>
         sessl.execute {
@@ -130,16 +129,15 @@ class SSJOutputAnalysisTest extends FunSpec with Logging {
         new Opt4JSetup {
           param("p", 1, 1, 15); param("n", 10000, 100, 15000)
           param("eps", 0.01, 0.005, 0.09); param("fit", 1, 1, 4)
-          optimizer = EvolutionaryAlgorithm(generations = 20, alpha = 30)
-          withOptimizationResults(println)
+          optimizer = EvolutionaryAlgorithm(generations = 3, alpha = 10)
+          withOptimizationResults { r =>
+            println(r)
+            optimizationResult = r.mkString("\n")
+          }
         }
       }
       logger.info("Optimization result:" + optimizationResult)
       assertTrue("Optimization results should be non-empty.", optimizationResult.length > 0)
-    }
-
-    it("works for a sample experiment") {
-
     }
   }
 }
