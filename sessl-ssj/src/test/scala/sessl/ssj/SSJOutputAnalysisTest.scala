@@ -109,14 +109,15 @@ class SSJOutputAnalysisTest extends FunSpec with Logging {
       import sessl.opt4j._
       import sessl.james._
 
-      optimize(MultiObjective(("exec-time", min), ("error", min))) { (params, objective) =>
+      optimize(("exec-time", min), ("error", min)) { (params, objective) =>
         sessl.execute {
-          new Experiment with Observation with PerformanceObservation with SSJOutputAnalysis {
+          new Experiment with Observation with  DataSink with PerformanceObservation with SSJOutputAnalysis {
             model = "java://examples.sr.LinearChainSystem"
             set("propensity" <~ params("p"), "numOfInitialParticles" <~ params("n"))
             stopTime = 1.0
             observe("S1")
             observeAt(range(.0, .1, .9))
+            dataSink = MySQLDataSink(schema = "test", password = "")
             simulator = TauLeaping(epsilon = params.get("eps"))
             withRunPerformance { perf => objective("exec-time") <~ perf.runtime }
             withRunResult { r =>
