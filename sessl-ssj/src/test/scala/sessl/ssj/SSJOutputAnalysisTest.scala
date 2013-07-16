@@ -36,7 +36,7 @@ class SSJOutputAnalysisTest extends FunSpec with Logging {
 
   describe("SSJ-based output analysis") {
 
-    def applyFunc(f: MathFunction, times: List[Double]): List[Double] = times.map(f.evaluate(_))
+    def applyFunc(f: MathFunction, times: Iterable[Double]): Iterable[Double] = times.map(f.evaluate(_))
 
     it("supports the least-squares polynom fitting.") {
       var linearFit: Option[Array[Double]] = None
