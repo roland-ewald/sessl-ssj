@@ -111,15 +111,14 @@ class SSJOutputAnalysisTest extends FunSpec with Logging {
 
       optimize(("exec-time", min), ("error", min)) { (params, objective) =>
         sessl.execute {
-          new Experiment with Observation with  DataSink with PerformanceObservation with SSJOutputAnalysis {
+          new Experiment with Observation with DataSink with PerformanceObservation with SSJOutputAnalysis {
             model = "java://examples.sr.LinearChainSystem"
             set("propensity" <~ params("p"), "numOfInitialParticles" <~ params("n"))
             stopTime = 1.0
             observe("S1")
             observeAt(range(.0, .1, .9))
-            dataSink = MySQLDataSink(schema = "test", password = "")
             simulator = TauLeaping(epsilon = params.get("eps"))
-            withRunPerformance { perf => objective("exec-time") <~ perf.runtime }
+            withRunPerformance { perf => objective("exec-time") <~ perf.runtime }           
             withRunResult { r =>
               objective("error") <~ Misc.rmse(r.trajectory("S1"),
                 fitAndEval(r.trajectory("S1"), Polynomial(params.get("fit"))))
