@@ -16,7 +16,6 @@
  */
 package sessl.ssj
 
-import com.weiglewilczek.slf4s.Logger
 import sessl.AbstractExperiment
 import sessl.AbstractReport
 import sessl.BoxPlotView
