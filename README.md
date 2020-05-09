@@ -1,4 +1,4 @@
-# SESSL-SSJ: A SESSL Binding for the Stochastic Simulation in Java (SSJ) library
+## SESSL-SSJ: A SESSL Binding for the Stochastic Simulation in Java (SSJ) library
 
 **Outdated, see http://sessl.org**
 
